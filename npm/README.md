@@ -1,4 +1,4 @@
-# JS NPM 常用的包
+# NPM 常用的包
 
 [配置类](_config.md)
 

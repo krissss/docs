@@ -4,6 +4,8 @@
 
 http 网络库
 
+简单的请求封装：
+
 ```js
 import axios from "axios";
 import loading from "./loading";

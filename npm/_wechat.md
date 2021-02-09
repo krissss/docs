@@ -4,7 +4,7 @@
 
 可用于微信开发的 sdk，服务端和客户端均可
 
-针对客户端的简单封装代码：
+针对客户端的简单封装：
 
 ```js
 import WechatJSSDK from 'wechat-jssdk';
