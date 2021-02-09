@@ -21,3 +21,30 @@
 ```html
 <progress-loading :value="loadingValue" animate-ts="200ms"/>
 ```
+
+[计时器](_files/TimerCounter.vue)
+
+```vue
+<template>
+  <timer-counter ref="timerCounter"></timer-counter>
+</template>
+<script>
+  export default {
+    computed: {
+      timerCounter() {
+        return this.$refs['timerCounter']
+      }
+    },
+    methods: {
+      __timerCounterMethods() {
+        // 开始
+        this.timerCounter.start()
+        // 停止
+        this.timerCounter.stop()
+        // 获取时间差
+        this.timerCounter.getCounter()
+      }
+    }
+  }
+</script>
+```
