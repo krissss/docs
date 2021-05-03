@@ -1,0 +1,146 @@
+#@link https://github.com/Kong/docker-kong/tree/master/compose
+#@link https://github.com/pantsel/konga/issues/533
+version: '3.7'
+
+volumes:
+  kong_data: {}
+
+networks:
+  kong-net:
+    external: false
+
+services:
+  kong-migrations:
+    image: "${KONG_DOCKER_TAG:-kong:2.0.4-alpine}"
+    command: kong migrations bootstrap
+    depends_on:
+      - db
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong}
+      KONG_PG_HOST: db
+      KONG_PG_USER: ${KONG_PG_USER:-kong}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+    networks:
+      - kong-net
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  kong-migrations-up:
+    image: "${KONG_DOCKER_TAG:-kong:2.0.4-alpine}"
+    command: kong migrations up && kong migrations finish
+    depends_on:
+      - db
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong}
+      KONG_PG_HOST: db
+      KONG_PG_USER: ${KONG_PG_USER:-kong}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+    networks:
+      - kong-net
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  kong:
+    image: "${KONG_DOCKER_TAG:-kong:2.0.4-alpine}"
+    user: "${KONG_USER:-kong}"
+    depends_on:
+      - db
+      - kong-migrations
+      - kong-migrations-up
+    environment:
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: '0.0.0.0:8001'
+      KONG_CASSANDRA_CONTACT_POINTS: db
+      KONG_DATABASE: postgres
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong}
+      KONG_PG_HOST: db
+      KONG_PG_USER: ${KONG_PG_USER:-kong}
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+    networks:
+      - kong-net
+    ports:
+      - "${KONG_PORT_8000:-8000}:8000/tcp"
+      #- "127.0.0.1:8001:8001/tcp"
+      - "${KONG_PORT_8443:-8443}:8443/tcp"
+      #- "127.0.0.1:8444:8444/tcp"
+    expose:
+      - 8001
+      - 8444
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  konga-prepare:
+    image: "${KONGA_DOCKER_TAG:-pantsel/konga:0.14.9}"
+    command: "-c prepare -a postgres -u postgresql://${KONG_PG_USER:-kong}:${KONG_PG_PASSWORD:-kong}@db:5432/${KONGA_PG_DATABASE:-konga}"
+    depends_on:
+      - db
+    networks:
+      - kong-net
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  konga:
+    image: "${KONGA_DOCKER_TAG:-pantsel/konga:0.14.9}"
+    depends_on:
+      - db
+      - konga-prepare
+      - kong
+    environment:
+      TOKEN_SECRET: ${KONGA_TOKEN_SECRET:-konga_token_secret}
+      DB_ADAPTER: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${KONGA_PG_USER:-kong}
+      DB_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+      DB_DATABASE: ${KONG_PG_DATABASE:-konga}
+      NODE_ENV: production
+    networks:
+      - kong-net
+    ports:
+      - "${KONGA_PORT_1337:-1337}:1337"
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+    
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: ${KONG_PG_DATABASE:-kong}
+      POSTGRES_USER: ${KONG_PG_USER:-kong}
+      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${KONG_PG_USER:-kong}"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    restart: on-failure
+    expose:
+      - 5432
+    deploy:
+      restart_policy:
+        condition: on-failure
+    stdin_open: true
+    tty: true
+    networks:
+      - kong-net
+    volumes:
+      - kong_data:/var/lib/postgresql/data
