@@ -26,3 +26,9 @@ animateScrollTo([1000, null], () => {
   console.log('over')
 })
 ```
+
+## vuescroll
+
+[npm](https://www.npmjs.com/package/vuescroll)
+
+仅支持 vue2，看上去功能强大，支持 pc/移动，未实际测试使用
