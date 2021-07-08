@@ -27,3 +27,7 @@ ln -s /mnt/docker-volumes /opt/docker/volumes
 # 启动服务
 service docker start
 ```
+
+# 技巧
+
+docker 内部获取宿主机的地址：`host.docker.internal`
