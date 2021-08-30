@@ -7,13 +7,13 @@
 
 ## commander
 
-[commander](https://www.npmjs.com/package/commander)
+[npm](https://www.npmjs.com/package/commander)
 
 完整的 nodejs 命令行模式
 
 ## console-stamp
 
-[console-stamp](https://www.npmjs.com/package/console-stamp)
+[npm](https://www.npmjs.com/package/console-stamp)
 
 cli 模式下日志输出（带时间、类型）
 
@@ -27,7 +27,7 @@ console.log('xxx')
 
 ## chalk
 
-[chalk](https://www.npmjs.com/package/chalk)
+[npm](https://www.npmjs.com/package/chalk)
 
 cli 模式下的输出带颜色
 
@@ -61,3 +61,9 @@ export default {
   }
 }
 ```
+
+## inquirer
+
+[npm](https://www.npmjs.com/package/inquirer)
+
+交互式命令行
