@@ -1,7 +1,6 @@
 # Table of contents
 
-* [docs](README.md)
-* [code-style](code-style/README.md)
+* [code-style](README.md)
   * [php代码规范](code-style/php代码规范.md)
   * [web前端规范](code-style/web前端规范.md)
   * [yii2代码规范](code-style/yii2代码规范.md)
