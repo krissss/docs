@@ -1,4 +1,23 @@
-# WSL2初始操作
+# WSL2
+
+## root 登录
+
+```bash
+# 在 ubuntu 内
+sudo passwd root
+
+# 在 powershell
+ubuntu config --default-user root
+```
+
+## 重启
+
+在 powershell 下（admin）
+
+```shell
+net stop LxssManager
+net start LxssManager
+```
 
 ## 设置代理
 

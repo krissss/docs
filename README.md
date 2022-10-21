@@ -1,3 +1,3 @@
 # Docs
 
-edit by [gitbook](https://app.gitbook.com)
+edit by [gitbook](https://app.gitbook.com/)
