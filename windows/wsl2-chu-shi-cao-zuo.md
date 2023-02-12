@@ -1,5 +1,14 @@
 # WSL2
 
+## 安装
+
+```bash
+# 安装
+wsl --install
+# 更新
+wsl --update
+```
+
 ## root 登录
 
 ```bash
